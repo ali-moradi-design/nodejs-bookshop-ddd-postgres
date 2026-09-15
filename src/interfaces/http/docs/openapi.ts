@@ -17,7 +17,7 @@ export const openApiSpec = {
   info: {
   "title": "Bookstore API",
   "version": "2.0.0",
-  "description": "Node.js + Express + PostgreSQL (Prisma) bookstore backend with JWT auth, RBAC, cart, favorites, discounts, uploads, and admin dashboard. Business routes are under /api/v1 (breaking change from unversioned /api)."
+  "description": "Node.js + Express + PostgreSQL (Prisma) bookstore backend with JWT auth (Bearer header or httpOnly cookies), RBAC, cart, favorites, discounts, uploads, and admin dashboard. Business routes are under /api/v1. Cookie-based clients must send credentials (fetch credentials: include) and CORS_ORIGIN must be an explicit frontend origin — not *."
 },
   servers: [
   {
@@ -30,7 +30,14 @@ export const openApiSpec = {
     "bearerAuth": {
       "type": "http",
       "scheme": "bearer",
-      "bearerFormat": "JWT"
+      "bearerFormat": "JWT",
+      "description": "Preferred for API clients. Checked before the accessToken cookie."
+    },
+    "cookieAuth": {
+      "type": "apiKey",
+      "in": "cookie",
+      "name": "accessToken",
+      "description": "httpOnly accessToken cookie set on register/login/refresh. Use with credentials: include."
     }
   },
   "schemas": {

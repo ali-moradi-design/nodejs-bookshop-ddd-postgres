@@ -30,7 +30,7 @@ prisma/
 
 ## Stack
 
-- Express 5, Prisma, PostgreSQL, Zod, Helmet, express-rate-limit, multer
+- Express 5, Prisma, PostgreSQL, Zod, Helmet, express-rate-limit, multer, cookie-parser
 - bcryptjs, jsonwebtoken, dotenv, cors, morgan
 - swagger-ui-express (OpenAPI at `/api/docs`)
 - ESLint + Prettier, tsx for dev, tsc-alias for path aliases
@@ -98,8 +98,40 @@ docker run --rm -p 4000:4000 --env-file .env nodejs-bookshop-postgres
 |--------|------|------|
 | POST | `/register` | public |
 | POST | `/login` | public |
-| POST | `/refresh` | public |
-| POST | `/logout` | public |
+| POST | `/refresh` | public (body **or** `refreshToken` cookie) |
+| POST | `/logout` | public (body **or** `refreshToken` cookie) |
+
+Register / login / refresh still return `accessToken` and `refreshToken` in JSON, and also set httpOnly cookies (`accessToken`, `refreshToken`). Protected routes accept `Authorization: Bearer <token>` first, otherwise the `accessToken` cookie.
+
+### Cookie auth (Next.js / browsers)
+
+CORS is `credentials: true`. Set `CORS_ORIGIN` to the frontend origin (e.g. `http://localhost:3000`). Do **not** use `*` in production — browsers reject `Access-Control-Allow-Origin: *` with credentials. If `CORS_ORIGIN=*` in development, the API reflects the request origin.
+
+```ts
+const API = 'http://localhost:4000';
+
+await fetch(`${API}/api/v1/auth/login`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include',
+  body: JSON.stringify({ email, password }),
+});
+
+const me = await fetch(`${API}/api/v1/users/me`, { credentials: 'include' });
+
+await fetch(`${API}/api/v1/auth/refresh`, {
+  method: 'POST',
+  credentials: 'include',
+});
+
+await fetch(`${API}/api/v1/auth/logout`, {
+  method: 'POST',
+  credentials: 'include',
+});
+```
+
+Cookie flags: `httpOnly`, `path=/`, `secure` from `COOKIE_SECURE` (default true in production, false in development), `sameSite` from `COOKIE_SAME_SITE` (default `lax`). Optional `COOKIE_DOMAIN`. `sameSite=none` requires `COOKIE_SECURE=true` and HTTPS.
+
 
 ### Books — `/api/v1/books`
 
@@ -114,9 +146,9 @@ docker run --rm -p 4000:4000 --env-file .env nodejs-bookshop-postgres
 
 | Method | Path | Auth |
 |--------|------|------|
-| GET | `/` | bearer |
-| POST | `/items` | bearer |
-| PATCH / DELETE | `/items/:bookId` | bearer |
+| GET | `/` | bearer or cookie |
+| POST | `/items` | bearer or cookie |
+| PATCH / DELETE | `/items/:bookId` | bearer or cookie |
 | DELETE | `/` | clear |
 | POST | `/checkout` | `orders:create` |
 

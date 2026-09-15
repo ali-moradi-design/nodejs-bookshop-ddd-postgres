@@ -11,10 +11,13 @@ export const loginSchema = z.object({
   password: z.string().min(1),
 });
 
-export const refreshSchema = z.object({
-  refreshToken: z.string().min(1),
-});
+/** Body is optional: refreshToken may come from the httpOnly cookie instead. */
+export const optionalRefreshTokenSchema = z.preprocess(
+  (v) => (v == null ? {} : v),
+  z.object({
+    refreshToken: z.string().min(1).optional(),
+  }),
+);
 
-export const logoutSchema = z.object({
-  refreshToken: z.string().min(1),
-});
+export const refreshSchema = optionalRefreshTokenSchema;
+export const logoutSchema = optionalRefreshTokenSchema;

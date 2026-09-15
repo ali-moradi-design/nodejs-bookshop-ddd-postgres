@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import request from 'supertest';
 import {
   authHeader,
   registerCustomer,
@@ -72,6 +73,44 @@ describe('Bookstore API (integration)', () => {
         .send({ email: 'admin@bookstore.local', password: 'wrong-password' })
         .expect(401);
       expect(res.body.message).toMatch(/invalid credentials/i);
+    });
+
+    it('login sets httpOnly cookies and a protected route works with the cookie jar', async () => {
+      const email = `cookie_${Date.now()}@test.local`;
+      await ctx.request
+        .post('/api/v1/auth/register')
+        .send({ name: 'Cookie User', email, password: 'Password123!' })
+        .expect(201);
+
+      const agent = request.agent(ctx.app);
+      const login = await agent
+        .post('/api/v1/auth/login')
+        .send({ email, password: 'Password123!' })
+        .expect(200);
+
+      expect(login.body.accessToken).toBeTruthy();
+      expect(login.body.refreshToken).toBeTruthy();
+
+      const setCookie = login.headers['set-cookie'];
+      expect(setCookie).toBeDefined();
+      const cookieHeaders = Array.isArray(setCookie) ? setCookie : [setCookie];
+      const joined = cookieHeaders.join('\n');
+      expect(joined).toMatch(/accessToken=/);
+      expect(joined).toMatch(/refreshToken=/);
+      expect(joined).toMatch(/HttpOnly/i);
+
+      const me = await agent.get('/api/v1/users/me').expect(200);
+      expect(me.body.data.email).toBe(email);
+
+      const refreshed = await agent.post('/api/v1/auth/refresh').send({}).expect(200);
+      expect(refreshed.body.accessToken).toBeTruthy();
+      expect(refreshed.body.refreshToken).not.toBe(login.body.refreshToken);
+
+      await agent.get('/api/v1/users/me').expect(200);
+
+      await agent.post('/api/v1/auth/logout').send({}).expect(200);
+
+      await agent.get('/api/v1/users/me').expect(401);
     });
   });
 
