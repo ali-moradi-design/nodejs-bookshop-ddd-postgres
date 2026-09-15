@@ -1,0 +1,68 @@
+{
+  "name": "nodejs-bookshop-postgres",
+  "version": "1.0.0",
+  "description": "Bookstore backend API with PostgreSQL (Prisma), auth, RBAC, orders, reviews, and reports",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "prisma generate && tsc && tsc-alias -p tsconfig.json",
+    "start": "node dist/server.js",
+    "lint": "eslint \"src/**/*.{ts,js}\" \"tests/**/*.{ts,js}\"",
+    "format": "prettier --write \"src/**/*.{ts,js,json}\" \"*.md\"",
+    "seed": "tsx src/scripts/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prisma": "prisma",
+    "migrate": "prisma migrate deploy",
+    "migrate:dev": "prisma migrate dev",
+    "generate": "prisma generate",
+    "postinstall": "prisma generate"
+  },
+  "keywords": [
+    "bookstore",
+    "express",
+    "prisma",
+    "postgresql",
+    "typescript"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.12.1",
+    "multer": "^2.4.0",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.6.0",
+    "@types/supertest": "^7.2.1",
+    "@types/swagger-ui-express": "^4.1.8",
+    "embedded-postgres": "^18.4.0-beta.17",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.6",
+    "prisma": "^6.19.0",
+    "supertest": "^7.2.2",
+    "tsc-alias": "^1.9.5",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^3.2.4"
+  }
+}

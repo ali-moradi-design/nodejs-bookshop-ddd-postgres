@@ -1,0 +1,13 @@
+export { PrismaBookRepository } from './BookRepository';
+export { PrismaUserRepository } from './UserRepository';
+export { PrismaOrderRepository } from './OrderRepository';
+export { PrismaReviewRepository } from './ReviewRepository';
+export { PrismaPermissionRepository } from './PermissionRepository';
+export { PrismaRoleRepository } from './RoleRepository';
+export { PrismaRefreshTokenRepository } from './RefreshTokenRepository';
+export { PrismaIssueReportRepository } from './IssueReportRepository';
+export { PrismaCartRepository } from './CartRepository';
+export { PrismaFavoriteRepository } from './FavoriteRepository';
+export { PrismaDiscountRepository } from './DiscountRepository';
+export { PrismaUnitOfWork } from './uow/prisma-unit-of-work';
+export { prisma, getPrisma, disconnectPrisma } from './client';
