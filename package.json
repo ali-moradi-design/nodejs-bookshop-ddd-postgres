@@ -1,5 +1,5 @@
 {
-  "name": "nodejs-bookshop-postgres",
+  "name": "nodejs-bookshop-ddd-postgres",
   "version": "1.0.0",
   "description": "Bookstore backend API with PostgreSQL (Prisma), auth, RBAC, orders, reviews, and reports",
   "main": "dist/server.js",
